@@ -226,7 +226,7 @@ int main(int argc,const char * argv[])
                             if (LDTE64.InLoadOrderLinks.Flink == ListEntry64.Flink) break;
                             if (NT_SUCCESS(NtWow64ReadVirtualMemory64(m_ProcessHandle, (PVOID64)LDTE64.FullDllName.Buffer, ProPath64, sizeof(ProPath64), NULL)))
                             {
-                                printf("妯″潡鍩哄潃:0x%llX\n妯″潡澶у皬:0x%X\n妯″潡璺緞:%ls\n", LDTE64.DllBase, LDTE64.SizeOfImage, ProPath64);
+                                printf("模块基址:0x%llX\n模块大小:0x%X\n模块路径:%ls\n", LDTE64.DllBase, LDTE64.SizeOfImage, ProPath64);
                             }
                             if (!NT_SUCCESS(NtWow64ReadVirtualMemory64(m_ProcessHandle, (PVOID64)LDTE64.InLoadOrderLinks.Flink, &LDTE64, sizeof(_LDR_DATA_TABLE_ENTRY64), NULL))) break;
                         }
@@ -259,7 +259,7 @@ int main(int argc,const char * argv[])
                             if (LDTE32.InLoadOrderLinks.Flink == ListEntry32.Flink) break;
                             if (ReadProcessMemory(m_ProcessHandle, (PVOID)LDTE32.FullDllName.Buffer, ProPath32, sizeof(ProPath32), NULL))
                             {
-                                printf("妯″潡鍩哄潃:0x%X\n妯″潡澶у皬:0x%X\n妯″潡璺緞:%ls\n", LDTE32.DllBase, LDTE32.SizeOfImage, ProPath32);
+                                printf("模块基址:0x%X\n模块大小:0x%X\n模块路径:%ls\n", LDTE32.DllBase, LDTE32.SizeOfImage, ProPath32);
                             }
                             if (!ReadProcessMemory(m_ProcessHandle, (PVOID)LDTE32.InLoadOrderLinks.Flink, &LDTE32, sizeof(_LDR_DATA_TABLE_ENTRY32), NULL)) break;
                         }
