@@ -1,4 +1,4 @@
-#include <windows.h> 
+#include <windows.h>
 #include "SeDebugPrivilege.h" 
 
 bool __stdcall EnableDebugPrivilege
