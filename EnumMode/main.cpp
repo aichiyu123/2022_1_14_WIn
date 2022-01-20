@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "windows.h"
 
+#include "privilege/SeDebugPrivilege.h"
+
 #define NT_SUCCESS(x) ((x) >= 0)
 #define ProcessBasicInformation 0
 
@@ -189,7 +191,17 @@ typedef struct _LDR_DATA_TABLE_ENTRY64
 int main(int argc,const char * argv[])
 {
     DWORD dwPid = atoi(argv[1]);
+    if(!EnableDebugPrivilege())
+    {
+        printf("EnableDebugPrivilege 0x%x\n",GetLastError());
+        return 0;
+    }
     HANDLE m_ProcessHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
+    if(m_ProcessHandle == NULL){
+        printf("ProcessHandleFailed  0x%x",GetLastError());
+        return 0;
+    }
+
     BOOL bTarget = FALSE;
     BOOL bSource = FALSE;
 
@@ -198,18 +210,16 @@ int main(int argc,const char * argv[])
 
     SYSTEM_INFO si;
     GetSystemInfo(&si);
-    printf("bSource %d  bTarget %d\n",bSource,bTarget);
+    printf("CurrentProcessIsWow64 %d  TargetProcessIsWow64 %d\n",bSource,bTarget);
     if (bTarget == FALSE && bSource == TRUE)
-    {
-      
-       
+    {    
         HMODULE NtdllModule = GetModuleHandleW(L"ntdll.dll");
         pfnNtWow64QueryInformationProcess64 NtWow64QueryInformationProcess64 = (pfnNtWow64QueryInformationProcess64)GetProcAddress(NtdllModule, "NtWow64QueryInformationProcess64");
         pfnNtWow64ReadVirtualMemory64 NtWow64ReadVirtualMemory64 = (pfnNtWow64ReadVirtualMemory64)GetProcAddress(NtdllModule, "NtWow64ReadVirtualMemory64");
         PROCESS_BASIC_INFORMATION64 pbi64 = { 0 };
         if (NT_SUCCESS(NtWow64QueryInformationProcess64(m_ProcessHandle, ProcessBasicInformation, &pbi64, sizeof(pbi64), NULL)))
         {
-            printf("bSource %d  bTarget %d\n", bSource, bTarget);
+            printf("NtWow64QueryInformationProcess64Succeed\n");
             //return 0;
             DWORD64 Ldr64 = 0;
             LIST_ENTRY64 ListEntry64 = { 0 };
